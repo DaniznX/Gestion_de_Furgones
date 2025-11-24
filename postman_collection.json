@@ -1,0 +1,104 @@
+{
+  "info": {
+    "name": "Gestion Furgones - API",
+    "_postman_id": "furgones-collection-0001",
+    "description": "Colección mínima para probar la API de Gestión de Furgones",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {"key":"base_url","value":"http://127.0.0.1:8000"},
+    {"key":"username","value":"admin"},
+    {"key":"password","value":"adminpass"},
+    {"key":"access_token","value":""}
+  ],
+  "item": [
+    {
+      "name": "Obtener token (admin)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {"key":"Content-Type","value":"application/json"}
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"username\": \"admin\", \"password\": \"adminpass\"}"
+        },
+        "url": {"raw": "http://127.0.0.1:8000/api/token/", "protocol":"http", "host":["127.0.0.1"], "port":"8000", "path":["api","token",""]}
+      }
+    },
+    {
+      "name": "Listar furgones",
+      "request": {
+        "method": "GET",
+        "header": [
+          {"key":"Authorization","value":"Bearer {{access_token}}"}
+        ],
+        "url": {"raw": "http://127.0.0.1:8000/api/furgones/", "protocol":"http", "host":["127.0.0.1"], "port":"8000", "path":["api","furgones",""]}
+      }
+    },
+    {
+      "name": "Actualizar ubicación (update_location)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {"key":"Content-Type","value":"application/json"},
+          {"key":"Authorization","value":"Bearer {{access_token}}"}
+        ],
+        "body": {"mode":"raw","raw":"{\"latitude\": -33.45, \"longitude\": -70.66, \"reported_at\": \"2025-11-20T08:30:00\"}"},
+        "url": {"raw": "http://127.0.0.1:8000/api/furgones/1/update_location/", "protocol":"http", "host":["127.0.0.1"], "port":"8000", "path":["api","furgones","1","update_location",""]}
+      }
+    },
+    {
+      "name": "Crear notificación",
+      "request": {
+        "method": "POST",
+        "header": [
+          {"key":"Content-Type","value":"application/json"},
+          {"key":"Authorization","value":"Bearer {{access_token}}"}
+        ],
+        "body": {"mode":"raw","raw":"{\"tipo\": \"evento\", \"mensaje\": \"El furgón llegará con 5 minutos de retraso\", \"furgon\": 1}"},
+        "url": {"raw": "http://127.0.0.1:8000/api/notificaciones/", "protocol":"http", "host":["127.0.0.1"], "port":"8000", "path":["api","notificaciones",""]}
+      }
+    },
+    {
+      "name": "Marcar notificación leída",
+      "request": {
+        "method": "POST",
+        "header": [
+          {"key":"Authorization","value":"Bearer {{access_token}}"}
+        ],
+        "url": {"raw": "http://127.0.0.1:8000/api/notificaciones/1/marcar_leida/", "protocol":"http", "host":["127.0.0.1"], "port":"8000", "path":["api","notificaciones","1","marcar_leida",""]}
+      }
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "exec": [
+          "// Auto-obtain JWT token and set environment variable 'access_token'",
+          "const base = pm.collectionVariables.get('base_url') || 'http://127.0.0.1:8000';",
+          "const user = pm.collectionVariables.get('username');",
+          "const pass = pm.collectionVariables.get('password');",
+          "if (!user || !pass) { console.log('username/password not set'); }",
+          "pm.sendRequest({",
+          "    url: base + '/api/token/',",
+          "    method: 'POST',",
+          "    header: { 'Content-Type': 'application/json' },",
+          "    body: { mode: 'raw', raw: JSON.stringify({ username: user, password: pass }) }",
+          "}, function (err, res) {",
+          "    if (err) { console.error(err); return; }",
+          "    try {",
+          "        const json = res.json();",
+          "        if (json && json.access) {",
+          "            pm.collectionVariables.set('access_token', json.access);",
+          "            console.log('access_token set');",
+          "        }",
+          "    } catch (e) { console.error(e); }",
+          "});"
+        ],
+        "type": "text/javascript"
+      }
+    }
+  ]
+}

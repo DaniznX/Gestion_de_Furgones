@@ -15,6 +15,62 @@
         </tbody>
       </table>
       <a class="btn btn-secondary" href="{{ object.get_edit_url }}">Editar</a>
+      {% comment %} Related objects preview {# safe, uses known relations #} {% endcomment %}
+      <hr>
+      <h5>Relaciones</h5>
+      {% if object._meta.model_name == 'furgon' %}
+        <h6>Estudiantes</h6>
+        <ul>
+          {% for s in object.estudiantes.all %}
+            <li><a href="{% url 'frontend:estudiante_detail' s.pk %}">{{ s.nombre }}</a></li>
+          {% empty %}
+            <li>No hay estudiantes asignados</li>
+          {% endfor %}
+        </ul>
+        <h6>Rutas</h6>
+        <ul>
+          {% for r in object.rutas.all %}
+            <li><a href="{% url 'frontend:ruta_detail' r.pk %}">{{ r.get_tipo_ruta_display }} ({{ r.hora_inicio }})</a></li>
+          {% empty %}
+            <li>No hay rutas</li>
+          {% endfor %}
+        </ul>
+      {% elif object._meta.model_name == 'colegio' %}
+        <h6>Furgones</h6>
+        <ul>
+          {% for f in object.furgones.all %}
+            <li><a href="{% url 'frontend:furgon_detail' f.pk %}">{{ f.patente }}</a></li>
+          {% empty %}
+            <li>No hay furgones</li>
+          {% endfor %}
+        </ul>
+      {% elif object._meta.model_name == 'estudiante' %}
+        <h6>Pagos</h6>
+        <ul>
+          {% for p in object.pagos.all %}
+            <li><a href="{% url 'frontend:pago_detail' p.pk %}">{{ p.monto }} - {{ p.estado }}</a></li>
+          {% empty %}
+            <li>No hay pagos</li>
+          {% endfor %}
+        </ul>
+        <h6>Asistencias</h6>
+        <ul>
+          {% for a in object.asistencias.all %}
+            <li>{{ a.fecha }} - {{ a.get_estado_display }}</li>
+          {% empty %}
+            <li>No hay asistencias</li>
+          {% endfor %}
+        </ul>
+      {% elif object._meta.model_name == 'conductor' %}
+        <h6>Furgones</h6>
+        <ul>
+          {% for f in object.furgones.all %}
+            <li><a href="{% url 'frontend:furgon_detail' f.pk %}">{{ f.patente }}</a></li>
+          {% empty %}
+            <li>No hay furgones</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
       <a class="btn btn-link" href="{{ request.META.HTTP_REFERER|default:request.path }}">Volver</a>
     </div>
   </div>

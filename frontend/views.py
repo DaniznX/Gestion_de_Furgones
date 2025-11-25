@@ -5,6 +5,7 @@ from django.views.generic import ListView, CreateView, UpdateView, TemplateView
 from django.urls import reverse_lazy
 from django.contrib import messages
 from django.views.generic import DetailView
+from django.db.models import Count, Q
 
 from core.models import Colegio, Conductor, Furgon, Estudiante, Ruta, Notificacion, Pago, Asistencia
 from core.permissions import in_group
@@ -51,6 +52,11 @@ class IndexView(TemplateView):
                 ctx['count_unread_notifications'] = Notificacion.objects.filter(leido=False).count()
         else:
             ctx['count_unread_notifications'] = 0
+        # top colegios by furgones
+        ctx['top_colegios'] = (
+            Colegio.objects.annotate(num_furgones=Count('furgones'))
+            .order_by('-num_furgones')[:5]
+        )
         return ctx
 
 
@@ -59,6 +65,13 @@ class ColegioList(LoginRequiredMixin, ListView):
     template_name = 'frontend/colegio_list.html'
     paginate_by = 20
     ordering = ['nombre']
+
+    def get_queryset(self):
+        qs = super().get_queryset().order_by('nombre')
+        q = self.request.GET.get('q')
+        if q:
+            qs = qs.filter(nombre__icontains=q)
+        return qs
 
 
 class AdminRequiredMixin(UserPassesTestMixin):
@@ -80,6 +93,13 @@ class ConductorList(LoginRequiredMixin, ListView):
     paginate_by = 20
     ordering = ['nombre']
 
+    def get_queryset(self):
+        qs = super().get_queryset().order_by('nombre')
+        q = self.request.GET.get('q')
+        if q:
+            qs = qs.filter(Q(nombre__icontains=q) | Q(rut__icontains=q))
+        return qs
+
 
 class ConductorCreate(LoginRequiredMixin, AdminRequiredMixin, CreateView):
     model = Conductor
@@ -97,15 +117,22 @@ class FurgonList(LoginRequiredMixin, ListView):
         user = self.request.user
         # Admins see all
         if user and (user.is_staff or in_group(user, 'Administrador')):
-            return super().get_queryset().order_by('patente')
+            qs = super().get_queryset().order_by('patente')
+        else:
+            qs = None
         # Conductors see only their furgones
         if user and in_group(user, 'Conductor'):
-            return Furgon.objects.filter(conductor__user=user).order_by('patente')
+            qs = Furgon.objects.filter(conductor__user=user).order_by('patente')
         # Apoderado sees furgones related to their students
         if user and in_group(user, 'Apoderado'):
-            return Furgon.objects.filter(estudiantes__apoderado_user=user).distinct().order_by('patente')
-        # Default: empty queryset for regular authenticated users
-        return Furgon.objects.none()
+            qs = Furgon.objects.filter(estudiantes__apoderado_user=user).distinct().order_by('patente')
+        # apply search filter if present
+        q = self.request.GET.get('q')
+        if qs is None:
+            qs = Furgon.objects.none()
+        if q:
+            qs = qs.filter(Q(patente__icontains=q) | Q(modelo__icontains=q))
+        return qs
 
 
 class FurgonMineView(LoginRequiredMixin, TemplateView):
@@ -205,12 +232,19 @@ class EstudianteList(LoginRequiredMixin, ListView):
     def get_queryset(self):
         user = self.request.user
         if user and (user.is_staff or in_group(user, 'Administrador')):
-            return super().get_queryset().order_by('nombre')
+            qs = super().get_queryset().order_by('nombre')
+        else:
+            qs = None
         if user and in_group(user, 'Apoderado'):
-            return Estudiante.objects.filter(apoderado_user=user).order_by('nombre')
+            qs = Estudiante.objects.filter(apoderado_user=user).order_by('nombre')
         if user and in_group(user, 'Conductor'):
-            return Estudiante.objects.filter(furgon__conductor__user=user).order_by('nombre')
-        return Estudiante.objects.none()
+            qs = Estudiante.objects.filter(furgon__conductor__user=user).order_by('nombre')
+        if qs is None:
+            qs = Estudiante.objects.none()
+        q = self.request.GET.get('q')
+        if q:
+            qs = qs.filter(Q(nombre__icontains=q) | Q(rut__icontains=q))
+        return qs
 
 
 class EstudianteCreate(LoginRequiredMixin, AdminRequiredMixin, CreateView):
@@ -255,6 +289,13 @@ class RutaList(LoginRequiredMixin, ListView):
     paginate_by = 20
     ordering = ['hora_inicio']
 
+    def get_queryset(self):
+        qs = super().get_queryset().order_by('hora_inicio')
+        q = self.request.GET.get('q')
+        if q:
+            qs = qs.filter(Q(tipo_ruta__icontains=q) | Q(furgon__patente__icontains=q))
+        return qs
+
 
 class RutaCreate(LoginRequiredMixin, AdminRequiredMixin, CreateView):
     model = Ruta
@@ -277,12 +318,17 @@ class NotificacionList(LoginRequiredMixin, ListView):
     def get_queryset(self):
         user = self.request.user
         if user and (user.is_staff or in_group(user, 'Administrador')):
-            return super().get_queryset()
-        if user and in_group(user, 'Apoderado'):
-            return Notificacion.objects.filter(estudiante__apoderado_user=user).order_by('-creado_at')
-        if user and in_group(user, 'Conductor'):
-            return Notificacion.objects.filter(furgon__conductor__user=user).order_by('-creado_at')
-        return Notificacion.objects.none()
+            qs = super().get_queryset().order_by('-creado_at')
+        elif user and in_group(user, 'Apoderado'):
+            qs = Notificacion.objects.filter(estudiante__apoderado_user=user).order_by('-creado_at')
+        elif user and in_group(user, 'Conductor'):
+            qs = Notificacion.objects.filter(furgon__conductor__user=user).order_by('-creado_at')
+        else:
+            qs = Notificacion.objects.none()
+        q = self.request.GET.get('q')
+        if q:
+            qs = qs.filter(mensaje__icontains=q)
+        return qs
 
 
 @login_required
@@ -325,6 +371,13 @@ class PagoList(LoginRequiredMixin, ListView):
     paginate_by = 20
     ordering = ['-fecha']
 
+    def get_queryset(self):
+        qs = super().get_queryset().order_by('-fecha')
+        q = self.request.GET.get('q')
+        if q:
+            qs = qs.filter(Q(estudiante__nombre__icontains=q) | Q(referencia__icontains=q))
+        return qs
+
 
 class PagoCreate(LoginRequiredMixin, AdminRequiredMixin, CreateView):
     model = Pago
@@ -343,6 +396,13 @@ class AsistenciaList(LoginRequiredMixin, ListView):
     template_name = 'frontend/asistencia_list.html'
     paginate_by = 20
     ordering = ['-fecha']
+
+    def get_queryset(self):
+        qs = super().get_queryset().order_by('-fecha')
+        q = self.request.GET.get('q')
+        if q:
+            qs = qs.filter(Q(estudiante__nombre__icontains=q))
+        return qs
 
 
 class AsistenciaCreate(LoginRequiredMixin, AdminRequiredMixin, CreateView):

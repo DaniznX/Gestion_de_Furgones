@@ -5,3 +5,4 @@ black==24.3.0
 flake8==7.0.0
 coverage==7.2.1
 isort==5.13.2
+mysqlclient

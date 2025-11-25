@@ -1,7 +1,13 @@
 {% extends 'frontend/base.html' %}
 
 {% block content %}
-  <h3>{{ title }}</h3>
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h3 class="mb-0">{{ title }}</h3>
+    <form method="get" class="d-flex" style="gap:.5rem">
+      <input name="q" value="{{ request.GET.q|default:'' }}" class="form-control form-control-sm" placeholder="Buscar...">
+      <button class="btn btn-sm btn-outline-secondary">Buscar</button>
+    </form>
+  </div>
   <p><a href="{{ new_url }}" class="btn btn-success">Nuevo</a></p>
   <table class="table table-striped">
     <thead>

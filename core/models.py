@@ -218,6 +218,7 @@ class Ruta(models.Model):
     ]
     furgon = models.ForeignKey(Furgon, null=True, blank=True, on_delete=models.SET_NULL, related_name='rutas')
     tipo_ruta = models.CharField(max_length=20, choices=TIPOS, default='ida')
+    localidades = models.CharField(max_length=500, blank=True, help_text='Lista de localidades / paradas separadas por comas')
     hora_inicio = models.TimeField(null=True, blank=True)
     hora_termino = models.TimeField(null=True, blank=True)
 

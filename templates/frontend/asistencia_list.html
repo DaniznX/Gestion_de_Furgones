@@ -10,7 +10,12 @@
     <thead><tr><th>Estudiante</th><th>Fecha</th><th>Estado</th><th>Furgón</th></tr></thead>
     <tbody>
       {% for a in object_list %}
-        <tr><td>{{ a.estudiante.nombre }}</td><td>{{ a.fecha }}</td><td>{{ a.estado }}</td><td>{{ a.furgon.patente if a.furgon }}</td></tr>
+        <tr>
+          <td>{{ a.estudiante.nombre }}</td>
+          <td>{{ a.fecha }}</td>
+          <td>{{ a.estado }}</td>
+          <td>{% if a.furgon %}{{ a.furgon.patente }}{% else %}-{% endif %}</td>
+        </tr>
       {% empty %}
         <tr><td colspan="4">Sin registros</td></tr>
       {% endfor %}

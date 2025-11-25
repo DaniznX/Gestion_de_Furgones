@@ -14,7 +14,7 @@
       <div class="col-6 col-md-4 col-lg-3">
         <a class="card text-decoration-none text-dark" href="{% url 'frontend:furgon_list' %}">
           <div class="card-body">
-            <h5 class="card-title">Furgones</h5>
+            <h5 class="card-title"><i class="bi bi-truck me-2"></i>Furgones</h5>
             <p class="card-text">Ver y administrar furgones</p>
             <small class="text-muted">Total: {{ count_furgones }}{% if count_my_furgones %} • Míos: {{ count_my_furgones }}{% endif %}</small>
           </div>
@@ -26,7 +26,7 @@
       <div class="col-6 col-md-4 col-lg-3">
         <a class="card text-decoration-none text-dark" href="{% url 'frontend:colegio_list' %}">
           <div class="card-body">
-            <h5 class="card-title">Colegios</h5>
+            <h5 class="card-title"><i class="bi bi-building me-2"></i>Colegios</h5>
             <p class="card-text">Gestión de colegios</p>
             <small class="text-muted">Total: {{ count_colegios }}</small>
           </div>
@@ -35,7 +35,7 @@
       <div class="col-6 col-md-4 col-lg-3">
         <a class="card text-decoration-none text-dark" href="{% url 'frontend:conductor_list' %}">
           <div class="card-body">
-            <h5 class="card-title">Conductores</h5>
+            <h5 class="card-title"><i class="bi bi-person-badge me-2"></i>Conductores</h5>
             <p class="card-text">Gestión de conductores</p>
             <small class="text-muted">Total: {{ count_conductores }}</small>
           </div>
@@ -47,7 +47,7 @@
       <div class="col-6 col-md-4 col-lg-3">
         <a class="card text-decoration-none text-dark" href="{% url 'frontend:estudiante_list' %}">
           <div class="card-body">
-            <h5 class="card-title">Estudiantes</h5>
+            <h5 class="card-title"><i class="bi bi-people me-2"></i>Estudiantes</h5>
             <p class="card-text">Ver estudiantes y apoderados</p>
             <small class="text-muted">Total: {{ count_estudiantes }}</small>
           </div>
@@ -56,7 +56,7 @@
       <div class="col-6 col-md-4 col-lg-3">
         <a class="card text-decoration-none text-dark" href="{% url 'frontend:ruta_list' %}">
           <div class="card-body">
-            <h5 class="card-title">Rutas</h5>
+            <h5 class="card-title"><i class="bi bi-geo-alt me-2"></i>Rutas</h5>
             <p class="card-text">Ver y editar rutas</p>
             <small class="text-muted">Total: {{ count_rutas }}</small>
           </div>
@@ -65,7 +65,7 @@
       <div class="col-6 col-md-4 col-lg-3">
         <a class="card text-decoration-none text-dark" href="{% url 'frontend:notificacion_list' %}">
           <div class="card-body">
-            <h5 class="card-title">Notificaciones</h5>
+            <h5 class="card-title"><i class="bi bi-bell me-2"></i>Notificaciones</h5>
             <p class="card-text">Mensajes y alertas</p>
             <small class="text-muted">No leídas: {{ count_unread_notifications }}</small>
           </div>
@@ -77,7 +77,7 @@
       <div class="col-6 col-md-4 col-lg-3">
         <a class="card text-decoration-none text-dark" href="{% url 'frontend:pago_list' %}">
           <div class="card-body">
-            <h5 class="card-title">Pagos</h5>
+            <h5 class="card-title"><i class="bi bi-currency-dollar me-2"></i>Pagos</h5>
             <p class="card-text">Control de pagos</p>
             <small class="text-muted">Total: {{ count_pagos }}</small>
           </div>
@@ -86,7 +86,7 @@
       <div class="col-6 col-md-4 col-lg-3">
         <a class="card text-decoration-none text-dark" href="{% url 'frontend:asistencia_list' %}">
           <div class="card-body">
-            <h5 class="card-title">Asistencias</h5>
+            <h5 class="card-title"><i class="bi bi-journal-check me-2"></i>Asistencias</h5>
             <p class="card-text">Registro de asistencias</p>
             <small class="text-muted">Total: {{ count_asistencias }}</small>
           </div>

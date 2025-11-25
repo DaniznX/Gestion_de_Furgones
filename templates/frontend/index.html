@@ -1,11 +1,119 @@
 {% extends 'frontend/base.html' %}
 
 {% block content %}
-  <div class="jumbotron">
+  <div class="jumbotron mb-4">
     <h1 class="display-5">Sistema Gestión de Furgones</h1>
-    <p class="lead">Bienvenido al panel de administración simple (frontend). Usa las secciones del menú para manejar recursos.</p>
-
+    <p class="lead">Bienvenido al panel de administración simple (frontend). Usa las secciones del menú o los accesos rápidos abajo para manejar recursos.</p>
     <hr class="my-4">
     <p>Este frontend cubre CRUD para colegios, conductores, furgones, estudiantes, rutas, notificaciones, pagos y asistencias.</p>
+  </div>
+
+  <div class="row g-3">
+    {% load role_tags %}
+    {% if user.is_authenticated %}
+      <div class="col-6 col-md-4 col-lg-3">
+        <a class="card text-decoration-none text-dark" href="{% url 'frontend:furgon_list' %}">
+          <div class="card-body">
+            <h5 class="card-title">Furgones</h5>
+            <p class="card-text">Ver y administrar furgones</p>
+            <small class="text-muted">Total: {{ count_furgones }}{% if count_my_furgones %} • Míos: {{ count_my_furgones }}{% endif %}</small>
+          </div>
+        </a>
+      </div>
+    {% endif %}
+
+    {% if user.is_staff or user|has_group:'Administrador' %}
+      <div class="col-6 col-md-4 col-lg-3">
+        <a class="card text-decoration-none text-dark" href="{% url 'frontend:colegio_list' %}">
+          <div class="card-body">
+            <h5 class="card-title">Colegios</h5>
+            <p class="card-text">Gestión de colegios</p>
+            <small class="text-muted">Total: {{ count_colegios }}</small>
+          </div>
+        </a>
+      </div>
+      <div class="col-6 col-md-4 col-lg-3">
+        <a class="card text-decoration-none text-dark" href="{% url 'frontend:conductor_list' %}">
+          <div class="card-body">
+            <h5 class="card-title">Conductores</h5>
+            <p class="card-text">Gestión de conductores</p>
+            <small class="text-muted">Total: {{ count_conductores }}</small>
+          </div>
+        </a>
+      </div>
+    {% endif %}
+
+    {% if user.is_staff or user|has_group:'Administrador' or user|has_group:'Conductor' or user|has_group:'Apoderado' %}
+      <div class="col-6 col-md-4 col-lg-3">
+        <a class="card text-decoration-none text-dark" href="{% url 'frontend:estudiante_list' %}">
+          <div class="card-body">
+            <h5 class="card-title">Estudiantes</h5>
+            <p class="card-text">Ver estudiantes y apoderados</p>
+            <small class="text-muted">Total: {{ count_estudiantes }}</small>
+          </div>
+        </a>
+      </div>
+      <div class="col-6 col-md-4 col-lg-3">
+        <a class="card text-decoration-none text-dark" href="{% url 'frontend:ruta_list' %}">
+          <div class="card-body">
+            <h5 class="card-title">Rutas</h5>
+            <p class="card-text">Ver y editar rutas</p>
+            <small class="text-muted">Total: {{ count_rutas }}</small>
+          </div>
+        </a>
+      </div>
+      <div class="col-6 col-md-4 col-lg-3">
+        <a class="card text-decoration-none text-dark" href="{% url 'frontend:notificacion_list' %}">
+          <div class="card-body">
+            <h5 class="card-title">Notificaciones</h5>
+            <p class="card-text">Mensajes y alertas</p>
+            <small class="text-muted">No leídas: {{ count_unread_notifications }}</small>
+          </div>
+        </a>
+      </div>
+    {% endif %}
+
+    {% if user.is_staff or user|has_group:'Administrador' %}
+      <div class="col-6 col-md-4 col-lg-3">
+        <a class="card text-decoration-none text-dark" href="{% url 'frontend:pago_list' %}">
+          <div class="card-body">
+            <h5 class="card-title">Pagos</h5>
+            <p class="card-text">Control de pagos</p>
+            <small class="text-muted">Total: {{ count_pagos }}</small>
+          </div>
+        </a>
+      </div>
+      <div class="col-6 col-md-4 col-lg-3">
+        <a class="card text-decoration-none text-dark" href="{% url 'frontend:asistencia_list' %}">
+          <div class="card-body">
+            <h5 class="card-title">Asistencias</h5>
+            <p class="card-text">Registro de asistencias</p>
+            <small class="text-muted">Total: {{ count_asistencias }}</small>
+          </div>
+        </a>
+      </div>
+    {% endif %}
+
+    {% if user.is_authenticated and user|has_group:'Conductor' %}
+      <div class="col-6 col-md-4 col-lg-3">
+        <a class="card text-decoration-none text-dark" href="{% url 'frontend:mi_furgon' %}">
+          <div class="card-body">
+            <h5 class="card-title">Mi Furgón</h5>
+            <p class="card-text">Acceso rápido a tu furgón y rutas</p>
+          </div>
+        </a>
+      </div>
+    {% endif %}
+
+    {% if not user.is_authenticated %}
+      <div class="col-6 col-md-4 col-lg-3">
+        <a class="card text-decoration-none text-dark" href="{% url 'frontend:login' %}">
+          <div class="card-body">
+            <h5 class="card-title">Entrar</h5>
+            <p class="card-text">Accede para ver y administrar recursos</p>
+          </div>
+        </a>
+      </div>
+    {% endif %}
   </div>
 {% endblock %}

@@ -17,11 +17,48 @@ from .forms import (
 class IndexView(TemplateView):
     template_name = 'frontend/index.html'
 
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        user = self.request.user
+        # Global counts
+        ctx['count_furgones'] = Furgon.objects.count()
+        ctx['count_colegios'] = Colegio.objects.count()
+        ctx['count_conductores'] = Conductor.objects.count()
+        ctx['count_estudiantes'] = Estudiante.objects.count()
+        ctx['count_rutas'] = Ruta.objects.count()
+        ctx['count_pagos'] = Pago.objects.count()
+        ctx['count_asistencias'] = Asistencia.objects.count()
+        # user-specific counts
+        if user and user.is_authenticated and in_group(user, 'Conductor'):
+            ctx['count_my_furgones'] = Furgon.objects.filter(conductor__user=user).count()
+        else:
+            ctx['count_my_furgones'] = 0
+        if user and user.is_authenticated:
+            # unread notifications relevant to user
+            if in_group(user, 'Apoderado'):
+                qs = Notificacion.objects.filter(
+                    estudiante__apoderado_user=user,
+                    leido=False,
+                )
+                ctx['count_unread_notifications'] = qs.count()
+            elif in_group(user, 'Conductor'):
+                qs = Notificacion.objects.filter(
+                    furgon__conductor__user=user,
+                    leido=False,
+                )
+                ctx['count_unread_notifications'] = qs.count()
+            else:
+                ctx['count_unread_notifications'] = Notificacion.objects.filter(leido=False).count()
+        else:
+            ctx['count_unread_notifications'] = 0
+        return ctx
+
 
 class ColegioList(LoginRequiredMixin, ListView):
     model = Colegio
     template_name = 'frontend/colegio_list.html'
     paginate_by = 20
+    ordering = ['nombre']
 
 
 class AdminRequiredMixin(UserPassesTestMixin):
@@ -41,6 +78,7 @@ class ConductorList(LoginRequiredMixin, ListView):
     model = Conductor
     template_name = 'frontend/conductor_list.html'
     paginate_by = 20
+    ordering = ['nombre']
 
 
 class ConductorCreate(LoginRequiredMixin, AdminRequiredMixin, CreateView):
@@ -59,13 +97,13 @@ class FurgonList(LoginRequiredMixin, ListView):
         user = self.request.user
         # Admins see all
         if user and (user.is_staff or in_group(user, 'Administrador')):
-            return super().get_queryset()
+            return super().get_queryset().order_by('patente')
         # Conductors see only their furgones
         if user and in_group(user, 'Conductor'):
-            return Furgon.objects.filter(conductor__user=user)
+            return Furgon.objects.filter(conductor__user=user).order_by('patente')
         # Apoderado sees furgones related to their students
         if user and in_group(user, 'Apoderado'):
-            return Furgon.objects.filter(estudiantes__apoderado_user=user).distinct()
+            return Furgon.objects.filter(estudiantes__apoderado_user=user).distinct().order_by('patente')
         # Default: empty queryset for regular authenticated users
         return Furgon.objects.none()
 
@@ -167,11 +205,11 @@ class EstudianteList(LoginRequiredMixin, ListView):
     def get_queryset(self):
         user = self.request.user
         if user and (user.is_staff or in_group(user, 'Administrador')):
-            return super().get_queryset()
+            return super().get_queryset().order_by('nombre')
         if user and in_group(user, 'Apoderado'):
-            return Estudiante.objects.filter(apoderado_user=user)
+            return Estudiante.objects.filter(apoderado_user=user).order_by('nombre')
         if user and in_group(user, 'Conductor'):
-            return Estudiante.objects.filter(furgon__conductor__user=user)
+            return Estudiante.objects.filter(furgon__conductor__user=user).order_by('nombre')
         return Estudiante.objects.none()
 
 
@@ -215,6 +253,7 @@ class RutaList(LoginRequiredMixin, ListView):
     model = Ruta
     template_name = 'frontend/ruta_list.html'
     paginate_by = 20
+    ordering = ['hora_inicio']
 
 
 class RutaCreate(LoginRequiredMixin, AdminRequiredMixin, CreateView):
@@ -284,6 +323,7 @@ class PagoList(LoginRequiredMixin, ListView):
     model = Pago
     template_name = 'frontend/pago_list.html'
     paginate_by = 20
+    ordering = ['-fecha']
 
 
 class PagoCreate(LoginRequiredMixin, AdminRequiredMixin, CreateView):
@@ -302,6 +342,7 @@ class AsistenciaList(LoginRequiredMixin, ListView):
     model = Asistencia
     template_name = 'frontend/asistencia_list.html'
     paginate_by = 20
+    ordering = ['-fecha']
 
 
 class AsistenciaCreate(LoginRequiredMixin, AdminRequiredMixin, CreateView):

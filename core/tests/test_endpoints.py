@@ -2,7 +2,7 @@ from django.test import TestCase
 from rest_framework.test import APIClient
 from django.contrib.auth.models import User, Group
 from core.models import Conductor, Furgon, Estudiante, Colegio, Notificacion
-from django.utils import timezone
+# no timezone required here
 
 
 class EndpointTests(TestCase):
@@ -28,10 +28,21 @@ class EndpointTests(TestCase):
 
         # Conductor and furgon
         self.conductor = Conductor.objects.create(rut='91000000-9', nombre='Cond E', user=self.cond_user)
-        self.furgon = Furgon.objects.create(patente='END-1', modelo='ModelE', capacidad_maxima=10, conductor=self.conductor, colegio=self.colegio)
+        self.furgon = Furgon.objects.create(
+            patente='END-1',
+            modelo='ModelE',
+            capacidad_maxima=10,
+            conductor=self.conductor,
+            colegio=self.colegio,
+        )
 
         # Student
-        self.student = Estudiante.objects.create(rut='81000000-8', nombre='Stud E', apoderado_user=self.apod_user, furgon=self.furgon)
+        self.student = Estudiante.objects.create(
+            rut='81000000-8',
+            nombre='Stud E',
+            apoderado_user=self.apod_user,
+            furgon=self.furgon,
+        )
 
         self.client = APIClient()
 

@@ -72,3 +72,21 @@ Coverage & badge notes
 - Las acciones de CI ahora generan un reporte de cobertura (XML) y lo suben a Codecov; cuando pushes al repo GitHub, la badge de coverage se actualizará.
 - Si el repositorio es privado, quizá necesites configurar el token de Codecov como secreto `CODECOV_TOKEN` en los settings del repo en GitHub.
 
+Frontend (server-side)
+- Se añadió una app `frontend` con vistas y plantillas (Django templates + Bootstrap CDN) para manejar CRUD y acciones:
+	- Rutas principales: `/` (dashboard), `/login/` y `/logout/`.
+	- Recursos: `/colegios/`, `/conductores/`, `/furgones/`, `/estudiantes/`, `/rutas/`, `/notificaciones/`, `/pagos/`, `/asistencias/`.
+	- Acciones especiales: desde la lista de furgones puedes enviar lat/lon para `update_location`; en notificaciones puedes marcar como leída.
+
+Uso de la UI localmente
+1. Inicia el servidor local:
+
+```powershell
+python manage.py runserver
+```
+
+2. Abre `http://127.0.0.1:8000/` y haz login con el superusuario creado por `manage.py seed` (usuario `admin` / contraseña `adminpass` por defecto si usaste el seed).
+
+3. Navega por las secciones del menú para crear/editar y utilizar las funciones del sistema.
+
+

@@ -2,8 +2,6 @@ from django.test import TestCase
 from rest_framework.test import APIClient
 from django.contrib.auth.models import User, Group
 from core.models import Conductor, Furgon, Colegio
-from django.utils import timezone
-import datetime
 
 
 class ViewsAdditionalTests(TestCase):
@@ -16,7 +14,11 @@ class ViewsAdditionalTests(TestCase):
 
         self.cole = Colegio.objects.create(nombre='Cole V')
         self.conductor = Conductor.objects.create(rut='92000000-1', nombre='Cond V', user=self.cond_user)
-        self.furgon = Furgon.objects.create(patente='V-1', conductor=self.conductor, colegio=self.cole)
+        self.furgon = Furgon.objects.create(
+            patente='V-1',
+            conductor=self.conductor,
+            colegio=self.cole,
+        )
 
         self.client = APIClient()
 
@@ -37,8 +39,15 @@ class ViewsAdditionalTests(TestCase):
     def test_update_location_invalid_reported_at_uses_now(self):
         self.client.force_authenticate(user=self.cond_user)
         url = f'/api/furgones/{self.furgon.id}/update_location/'
-        before = timezone.now()
-        resp = self.client.post(url, {'latitude': -10.0, 'longitude': 20.0, 'reported_at': 'invalid-date'}, format='json')
+        resp = self.client.post(
+            url,
+            {
+                'latitude': -10.0,
+                'longitude': 20.0,
+                'reported_at': 'invalid-date',
+            },
+            format='json',
+        )
         self.assertEqual(resp.status_code, 200)
         data = resp.json()
         self.assertIn('last_reported_at', data)

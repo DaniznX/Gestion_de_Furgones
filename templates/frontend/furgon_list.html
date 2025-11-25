@@ -1,0 +1,53 @@
+{% extends 'frontend/base.html' %}
+
+{% block content %}
+  <h3>Furgones</h3>
+  {% load role_tags %}
+  {% if user.is_staff or user|has_group:'Administrador' %}
+    <p><a href="/furgones/new/" class="btn btn-success">Nuevo Furgón</a></p>
+  {% endif %}
+  <table class="table table-bordered">
+    <thead>
+      <tr>
+        <th>Patente</th>
+        <th>Modelo</th>
+        <th>Capacidad</th>
+        <th>Conductor</th>
+        <th>Última Lat</th>
+        <th>Última Lon</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for f in object_list %}
+        <tr>
+          <td>{{ f.patente }}</td>
+          <td>{{ f.modelo }}</td>
+          <td>{{ f.capacidad_actual }}/{{ f.capacidad_maxima }}</td>
+          <td>{% if f.conductor %}{{ f.conductor.nombre }}{% endif %}</td>
+          <td>{{ f.last_latitude }}</td>
+          <td>{{ f.last_longitude }}</td>
+          <td>
+            {% if user.is_staff or user|has_group:'Administrador' %}
+              <a class="btn btn-sm btn-secondary" href="/furgones/{{ f.pk }}/edit/">Editar</a>
+            {% else %}
+              {% with is_cond=user|has_group:'Conductor' %}
+                {% if is_cond and f.conductor and f.conductor.user == user %}
+                  <a class="btn btn-sm btn-secondary" href="/furgones/{{ f.pk }}/edit/">Editar</a>
+                {% endif %}
+              {% endwith %}
+            {% endif %}
+            <form method="post" action="/furgones/{{ f.pk }}/update_location/" style="display:inline-block; margin-left:6px">
+              {% csrf_token %}
+              <input name="latitude" placeholder="lat" class="form-control d-inline-block" style="width:110px; display:inline-block" />
+              <input name="longitude" placeholder="lon" class="form-control d-inline-block" style="width:110px; display:inline-block" />
+              <button class="btn btn-sm btn-primary">Actualizar</button>
+            </form>
+          </td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="7">No hay furgones.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}

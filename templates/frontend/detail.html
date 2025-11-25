@@ -1,0 +1,21 @@
+{% extends 'frontend/base.html' %}
+
+{% block content %}
+  <h3>Detalle</h3>
+  <div class="card">
+    <div class="card-body">
+      <table class="table">
+        <tbody>
+          {% for field in object._meta.fields %}
+            <tr>
+              <th style="width:30%">{{ field.verbose_name }}</th>
+              <td>{{ object|attr:field.name }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      <a class="btn btn-secondary" href="{{ object.get_edit_url }}">Editar</a>
+      <a class="btn btn-link" href="{{ request.META.HTTP_REFERER|default:request.path }}">Volver</a>
+    </div>
+  </div>
+{% endblock %}

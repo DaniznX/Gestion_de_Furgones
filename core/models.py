@@ -1,5 +1,6 @@
 from django.db import models
 from django.conf import settings
+from django.urls import reverse
 
 
 class Colegio(models.Model):
@@ -12,6 +13,12 @@ class Colegio(models.Model):
     def __str__(self):
         return self.nombre
 
+    def get_absolute_url(self):
+        return reverse('frontend:colegio_edit', args=[self.pk])
+
+    def get_edit_url(self):
+        return self.get_absolute_url()
+
 
 class Conductor(models.Model):
     rut = models.CharField(max_length=20, unique=True)
@@ -20,10 +27,22 @@ class Conductor(models.Model):
     numero_licencia = models.CharField(max_length=100, blank=True)
     tipo_licencia = models.CharField(max_length=50, blank=True)
     fecha_vencimiento_licencia = models.DateField(null=True, blank=True)
-    user = models.OneToOneField(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET_NULL, related_name='conductor_profile')
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='conductor_profile',
+    )
 
     def __str__(self):
         return f"{self.nombre} ({self.rut})"
+
+    def get_absolute_url(self):
+        return reverse('frontend:conductor_edit', args=[self.pk])
+
+    def get_edit_url(self):
+        return self.get_absolute_url()
 
 
 class Furgon(models.Model):
@@ -50,6 +69,12 @@ class Furgon(models.Model):
 
     def __str__(self):
         return self.patente
+
+    def get_absolute_url(self):
+        return reverse('frontend:furgon_edit', args=[self.pk])
+
+    def get_edit_url(self):
+        return self.get_absolute_url()
 
     def calcular_ocupacion(self):
         if self.capacidad_maxima == 0:
@@ -79,11 +104,29 @@ class Estudiante(models.Model):
     telefono = models.CharField(max_length=50, blank=True)
     nombre_apoderado = models.CharField(max_length=255, blank=True)
     telefono_apoderado = models.CharField(max_length=50, blank=True)
-    furgon = models.ForeignKey(Furgon, null=True, blank=True, on_delete=models.SET_NULL, related_name='estudiantes')
-    apoderado_user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET_NULL, related_name='apoderado_estudiantes')
+    furgon = models.ForeignKey(
+        Furgon,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='estudiantes',
+    )
+    apoderado_user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='apoderado_estudiantes',
+    )
 
     def __str__(self):
         return f"{self.nombre} ({self.rut})"
+
+    def get_absolute_url(self):
+        return reverse('frontend:estudiante_edit', args=[self.pk])
+
+    def get_edit_url(self):
+        return self.get_absolute_url()
 
 
 class Notificacion(models.Model):
@@ -94,8 +137,20 @@ class Notificacion(models.Model):
     ]
     tipo = models.CharField(max_length=20, choices=TIPOS, default='info')
     mensaje = models.TextField()
-    estudiante = models.ForeignKey(Estudiante, null=True, blank=True, on_delete=models.CASCADE, related_name='notificaciones')
-    furgon = models.ForeignKey(Furgon, null=True, blank=True, on_delete=models.SET_NULL, related_name='notificaciones')
+    estudiante = models.ForeignKey(
+        Estudiante,
+        null=True,
+        blank=True,
+        on_delete=models.CASCADE,
+        related_name='notificaciones',
+    )
+    furgon = models.ForeignKey(
+        Furgon,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='notificaciones',
+    )
     creado_at = models.DateTimeField(auto_now_add=True)
     leido = models.BooleanField(default=False)
 
@@ -123,6 +178,12 @@ class Pago(models.Model):
     def __str__(self):
         return f"Pago {self.pk} - {self.estudiante.nombre} - {self.monto} ({self.estado})"
 
+    def get_absolute_url(self):
+        return reverse('frontend:pago_list')
+
+    def get_edit_url(self):
+        return self.get_absolute_url()
+
 
 class Asistencia(models.Model):
     ESTADO_ASIS = [
@@ -142,6 +203,12 @@ class Asistencia(models.Model):
     def __str__(self):
         return f"Asistencia {self.estudiante.nombre} - {self.fecha} - {self.estado}"
 
+    def get_absolute_url(self):
+        return reverse('frontend:asistencia_list')
+
+    def get_edit_url(self):
+        return self.get_absolute_url()
+
 
 class Ruta(models.Model):
     TIPOS = [
@@ -156,3 +223,9 @@ class Ruta(models.Model):
 
     def __str__(self):
         return f"Ruta {self.pk} - {self.tipo_ruta}"
+
+    def get_absolute_url(self):
+        return reverse('frontend:ruta_edit', args=[self.pk])
+
+    def get_edit_url(self):
+        return self.get_absolute_url()

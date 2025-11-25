@@ -1,0 +1,40 @@
+{% extends 'frontend/base.html' %}
+
+{% block content %}
+  <h3>Mi(s) Furgón(es)</h3>
+  {% if furgones %}
+    {% for f in furgones %}
+      <div class="card mb-3">
+        <div class="card-body">
+          <h5 class="card-title">{{ f.patente }} - {{ f.modelo }}</h5>
+          <p>Última ubicación: {{ f.last_latitude }} , {{ f.last_longitude }} ({{ f.last_reported_at }})</p>
+          <p>Capacidad: {{ f.capacidad_actual }}/{{ f.capacidad_maxima }}</p>
+          <h6>Estudiantes asignados</h6>
+          <ul>
+            {% for s in students %}
+              <li>{{ s.nombre }} ({{ s.rut }})</li>
+            {% empty %}
+              <li>No hay estudiantes asignados</li>
+            {% endfor %}
+          </ul>
+          <h6>Rutas</h6>
+          <ul>
+            {% for r in routes %}
+              <li>{{ r.get_tipo_ruta_display }} - {{ r.hora_inicio }} → {{ r.hora_termino }}</li>
+            {% empty %}
+              <li>No hay rutas</li>
+            {% endfor %}
+          </ul>
+          <form method="post" action="/furgones/{{ f.pk }}/update_location/" class="d-flex gap-2 mt-2">
+            {% csrf_token %}
+            <input name="latitude" placeholder="lat" class="form-control" />
+            <input name="longitude" placeholder="lon" class="form-control" />
+            <button class="btn btn-primary">Actualizar Ubicación</button>
+          </form>
+        </div>
+      </div>
+    {% endfor %}
+  {% else %}
+    <p>No hay furgones asociados.</p>
+  {% endif %}
+{% endblock %}

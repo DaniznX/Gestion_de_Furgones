@@ -1,0 +1,38 @@
+{% extends 'frontend/base.html' %}
+
+{% block content %}
+  <h3>Estudiantes</h3>
+  {% load role_tags %}
+  {% if user.is_staff or user|has_group:'Administrador' %}
+    <p><a href="/estudiantes/new/" class="btn btn-success">Nuevo Estudiante</a></p>
+  {% endif %}
+  <table class="table table-striped">
+    <thead><tr><th>Nombre</th><th>RUT</th><th>Furgón</th><th>Apoderado</th><th>Tel Apoderado</th><th>Acciones</th></tr></thead>
+    <tbody>
+      {% for s in object_list %}
+        <tr>
+          <td>{{ s.nombre }}</td>
+          <td>{{ s.rut }}</td>
+          <td>{% if s.furgon %}{{ s.furgon.patente }}{% endif %}</td>
+          <td>{% if s.apoderado_user %}{{ s.apoderado_user.username }}{% endif %}</td>
+          <td>{{ s.telefono_apoderado }}</td>
+          <td>
+            {% if user.is_staff or user|has_group:'Administrador' %}
+              <a class="btn btn-sm btn-secondary" href="/estudiantes/{{ s.pk }}/edit/">Editar</a>
+            {% else %}
+              {% with is_apod=user|has_group:'Apoderado' is_cond=user|has_group:'Conductor' %}
+                {% if is_apod and s.apoderado_user and s.apoderado_user == user %}
+                  <a class="btn btn-sm btn-secondary" href="/estudiantes/{{ s.pk }}/edit/">Editar</a>
+                {% elif is_cond and s.furgon and s.furgon.conductor and s.furgon.conductor.user == user %}
+                  <a class="btn btn-sm btn-secondary" href="/estudiantes/{{ s.pk }}/edit/">Editar</a>
+                {% endif %}
+              {% endwith %}
+            {% endif %}
+          </td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="6">Sin estudiantes.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}

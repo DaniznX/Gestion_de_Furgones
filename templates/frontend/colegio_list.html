@@ -1,0 +1,16 @@
+{% extends 'frontend/base.html' %}
+
+{% block content %}
+  <h3>Colegios</h3>
+  {% load role_tags %}
+  {% if user.is_staff or user|has_group:'Administrador' %}
+    <p><a href="/colegios/new/" class="btn btn-success">Nuevo Colegio</a></p>
+  {% endif %}
+  <ul class="list-group">
+    {% for c in object_list %}
+      <li class="list-group-item">{{ c.nombre }} - {{ c.direccion }}</li>
+    {% empty %}
+      <li class="list-group-item">Sin colegios</li>
+    {% endfor %}
+  </ul>
+{% endblock %}

@@ -1,0 +1,19 @@
+{% extends 'frontend/base.html' %}
+
+{% block content %}
+  <h3>Asistencias</h3>
+  {% load role_tags %}
+  {% if user.is_staff or user|has_group:'Administrador' %}
+    <p><a href="/asistencias/new/" class="btn btn-success">Nueva Asistencia</a></p>
+  {% endif %}
+  <table class="table">
+    <thead><tr><th>Estudiante</th><th>Fecha</th><th>Estado</th><th>Furgón</th></tr></thead>
+    <tbody>
+      {% for a in object_list %}
+        <tr><td>{{ a.estudiante.nombre }}</td><td>{{ a.fecha }}</td><td>{{ a.estado }}</td><td>{{ a.furgon.patente if a.furgon }}</td></tr>
+      {% empty %}
+        <tr><td colspan="4">Sin registros</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}

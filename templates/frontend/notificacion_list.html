@@ -1,0 +1,41 @@
+{% extends 'frontend/base.html' %}
+
+{% block content %}
+  <h3>Notificaciones</h3>
+  {% load role_tags %}
+  {% if user.is_staff or user|has_group:'Administrador' %}
+    <p><a href="/notificaciones/new/" class="btn btn-success">Nueva Notificación</a></p>
+  {% endif %}
+  <table class="table">
+    <thead><tr><th>Tipo</th><th>Mensaje</th><th>Estudiante</th><th>Furgón</th><th>Creado</th><th>Leído</th><th>Acciones</th></tr></thead>
+    <tbody>
+      {% for n in object_list %}
+        <tr>
+          <td>{{ n.get_tipo_display }}</td>
+          <td>{{ n.mensaje }}</td>
+          <td>{% if n.estudiante %}{{ n.estudiante.nombre }}{% endif %}</td>
+          <td>{% if n.furgon %}{{ n.furgon.patente }}{% endif %}</td>
+          <td>{{ n.creado_at }}</td>
+          <td>{{ n.leido }}</td>
+          <td>
+            {% if not n.leido %}
+              {% if user.is_staff or user|has_group:'Administrador' %}
+                <a class="btn btn-sm btn-primary" href="/notificaciones/{{ n.pk }}/marcar_leida/">Marcar como leída</a>
+              {% else %}
+                {% with is_apod=user|has_group:'Apoderado' is_cond=user|has_group:'Conductor' %}
+                  {% if is_apod and n.estudiante and n.estudiante.apoderado_user == user %}
+                    <a class="btn btn-sm btn-primary" href="/notificaciones/{{ n.pk }}/marcar_leida/">Marcar como leída</a>
+                  {% elif is_cond and n.furgon and n.furgon.conductor and n.furgon.conductor.user == user %}
+                    <a class="btn btn-sm btn-primary" href="/notificaciones/{{ n.pk }}/marcar_leida/">Marcar como leída</a>
+                  {% endif %}
+                {% endwith %}
+              {% endif %}
+            {% endif %}
+          </td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="7">No hay notificaciones.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}

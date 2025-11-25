@@ -2,7 +2,6 @@ from django.test import TestCase
 from rest_framework.test import APIClient
 from django.contrib.auth.models import User, Group
 from core.models import Conductor, Furgon, Estudiante, Colegio
-from django.utils import timezone
 
 
 class PermissionTests(TestCase):
@@ -28,10 +27,21 @@ class PermissionTests(TestCase):
 
         # Conductor profile and furgon
         self.conductor = Conductor.objects.create(rut='90000000-9', nombre='Cond Test', user=self.cond_user)
-        self.furgon = Furgon.objects.create(patente='TEST-1', modelo='Model', capacidad_maxima=10, conductor=self.conductor, colegio=self.colegio)
+        self.furgon = Furgon.objects.create(
+            patente='TEST-1',
+            modelo='Model',
+            capacidad_maxima=10,
+            conductor=self.conductor,
+            colegio=self.colegio,
+        )
 
         # Students
-        self.student_owned = Estudiante.objects.create(rut='80000000-8', nombre='Stud One', apoderado_user=self.apod_user, furgon=self.furgon)
+        self.student_owned = Estudiante.objects.create(
+            rut='80000000-8',
+            nombre='Stud One',
+            apoderado_user=self.apod_user,
+            furgon=self.furgon,
+        )
         self.student_other = Estudiante.objects.create(rut='70000000-7', nombre='Stud Two')
 
         self.client = APIClient()

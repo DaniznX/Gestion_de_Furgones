@@ -8,7 +8,11 @@ from .serializers import (
     ColegioSerializer, ConductorSerializer, FurgonSerializer, EstudianteSerializer,
     RutaSerializer, NotificacionSerializer, PagoSerializer, AsistenciaSerializer
 )
-from .permissions import IsAdminOrReadOnly, IsAdminOrConductorOrReadOnly, IsAdminOrApoderadoOrConductorOrReadOnly
+from .permissions import (
+    IsAdminOrReadOnly,
+    IsAdminOrConductorOrReadOnly,
+    AllowAuthenticatedWriteOrReadOnly,
+)
 from .permissions import in_group
 
 
@@ -33,7 +37,12 @@ class FurgonViewSet(viewsets.ModelViewSet):
     def update_location(self, request, pk=None):
         """Endpoint para actualizar ubicación GPS del furgón.
 
-        Payload esperado: { "latitude": <float>, "longitude": <float>, "reported_at": "YYYY-MM-DDTHH:MM:SS" (opcional) }
+        Payload esperado (JSON):
+            {
+                "latitude": <float>,
+                "longitude": <float>,
+                "reported_at": "YYYY-MM-DDTHH:MM:SS"  # opcional
+            }
         """
         furgon = self.get_object()
         lat = request.data.get('latitude')
@@ -61,13 +70,7 @@ class FurgonViewSet(viewsets.ModelViewSet):
 class EstudianteViewSet(viewsets.ModelViewSet):
     queryset = Estudiante.objects.all()
     serializer_class = EstudianteSerializer
-    permission_classes = [
-        # Allow authenticated users to attempt writes; ownership enforced in partial_update
-        # by explicit checks.
-        
-        # Use the permissive class defined for view-level checks
-        __import__('core.permissions', fromlist=['']).AllowAuthenticatedWriteOrReadOnly
-    ]
+    permission_classes = [AllowAuthenticatedWriteOrReadOnly]
 
     def partial_update(self, request, *args, **kwargs):
         # Custom partial update that enforces ownership without relying on DRF's get_object (which
@@ -85,8 +88,12 @@ class EstudianteViewSet(viewsets.ModelViewSet):
             pass
         else:
             # Apoderado owner
-            if user and in_group(user, 'Apoderado') and getattr(instance, 'apoderado_user', None) and getattr(instance.apoderado_user, 'pk', None) == getattr(user, 'pk', None):
-                pass
+            if user and in_group(user, 'Apoderado'):
+                apod = getattr(instance, 'apoderado_user', None)
+                if apod and getattr(apod, 'pk', None) == getattr(user, 'pk', None):
+                    pass
+                else:
+                    return Response({'detail': 'No autorizado'}, status=status.HTTP_403_FORBIDDEN)
             else:
                 return Response({'detail': 'No autorizado'}, status=status.HTTP_403_FORBIDDEN)
 

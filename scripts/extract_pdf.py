@@ -30,7 +30,7 @@ def find_snippets(text, keywords, context_chars=100):
         for m in re.finditer(re.escape(k), text, flags=re.IGNORECASE):
             start = max(0, m.start()-context_chars)
             end = min(len(text), m.end()+context_chars)
-            snippets[k].append(text[start:end].replace('\n',' '))
+            snippets[k].append(text[start:end].replace('\n', ' '))
     return snippets
 
 
@@ -62,9 +62,9 @@ if __name__ == '__main__':
     print('\n--- Fin del extracto ---\n')
 
     keywords = [
-        'Conductor','Estudiante','Furgon','Furgón','Ruta','Colegio','Apoderado',
-        'Registrar','patente','licencia','capacidad','telefono','direccion','rut',
-        'asignar','reporte','horario'
+        'Conductor', 'Estudiante', 'Furgon', 'Furgón', 'Ruta', 'Colegio', 'Apoderado',
+        'Registrar', 'patente', 'licencia', 'capacidad', 'telefono', 'direccion', 'rut',
+        'asignar', 'reporte', 'horario',
     ]
 
     snippets = find_snippets(text, keywords, context_chars=250)

@@ -23,8 +23,17 @@ class PermissionsExtraTests(TestCase):
 
         self.cole = Colegio.objects.create(nombre='Cole X')
         self.conductor = Conductor.objects.create(rut='940', nombre='CondX', user=self.cond_user)
-        self.furgon = Furgon.objects.create(patente='X-1', conductor=self.conductor, colegio=self.cole)
-        self.student = Estudiante.objects.create(rut='600', nombre='EstX', apoderado_user=self.apod_user, furgon=self.furgon)
+        self.furgon = Furgon.objects.create(
+            patente='X-1',
+            conductor=self.conductor,
+            colegio=self.cole,
+        )
+        self.student = Estudiante.objects.create(
+            rut='600',
+            nombre='EstX',
+            apoderado_user=self.apod_user,
+            furgon=self.furgon,
+        )
 
         self.factory = APIRequestFactory()
 
@@ -38,14 +47,20 @@ class PermissionsExtraTests(TestCase):
         perm = IsAdminOrConductorOrReadOnly()
         req = self.factory.post('/x')
         req.user = self.cond_user
-        class V: action = 'update_location'
+
+        class V:
+            action = 'update_location'
+
         self.assertTrue(perm.has_permission(req, V()))
 
     def test_is_admin_or_conductor_has_permission_action_not_allowed(self):
         perm = IsAdminOrConductorOrReadOnly()
         req = self.factory.post('/x')
         req.user = self.cond_user
-        class V: action = 'patch'
+
+        class V:
+            action = 'patch'
+
         self.assertFalse(perm.has_permission(req, V()))
 
     def test_is_admin_or_conductor_object_permission_allows_safe_methods(self):

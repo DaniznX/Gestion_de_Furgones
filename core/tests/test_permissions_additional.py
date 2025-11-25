@@ -36,11 +36,28 @@ class PermissionAdditionalTests(TestCase):
         self.conductor = Conductor.objects.create(rut='91000000-0', nombre='Cond Extra', user=self.cond_user)
         self.conductor2 = Conductor.objects.create(rut='92000000-0', nombre='Cond Other', user=self.cond_user2)
 
-        self.furgon_own = Furgon.objects.create(patente='OWN-1', modelo='M', capacidad_maxima=10, conductor=self.conductor, colegio=self.colegio)
-        self.furgon_other = Furgon.objects.create(patente='OTH-1', modelo='M', capacidad_maxima=10, conductor=self.conductor2, colegio=self.colegio)
+        self.furgon_own = Furgon.objects.create(
+            patente='OWN-1',
+            modelo='M',
+            capacidad_maxima=10,
+            conductor=self.conductor,
+            colegio=self.colegio,
+        )
+        self.furgon_other = Furgon.objects.create(
+            patente='OTH-1',
+            modelo='M',
+            capacidad_maxima=10,
+            conductor=self.conductor2,
+            colegio=self.colegio,
+        )
 
         # Student assigned to furgon_own
-        self.student = Estudiante.objects.create(rut='83000000-3', nombre='Stud Extra', apoderado_user=self.apod_user, furgon=self.furgon_own)
+        self.student = Estudiante.objects.create(
+            rut='83000000-3',
+            nombre='Stud Extra',
+            apoderado_user=self.apod_user,
+            furgon=self.furgon_own,
+        )
 
         self.factory = APIRequestFactory()
 
@@ -65,7 +82,9 @@ class PermissionAdditionalTests(TestCase):
         request = self.factory.post('/fake/1/update_location/')
         request.user = self.cond_user
         # create a fake view with action attribute
-        class V: action = 'update_location'
+
+        class V:
+            action = 'update_location'
 
         self.assertTrue(perm.has_object_permission(request, V(), self.furgon_own))
 
@@ -74,7 +93,8 @@ class PermissionAdditionalTests(TestCase):
         request = self.factory.post('/fake/2/update_location/')
         request.user = self.cond_user
 
-        class V: action = 'update_location'
+        class V:
+            action = 'update_location'
 
         self.assertFalse(perm.has_object_permission(request, V(), self.furgon_other))
 

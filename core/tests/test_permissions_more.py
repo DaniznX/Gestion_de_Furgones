@@ -33,8 +33,17 @@ class PermissionsMoreTests(TestCase):
 
         self.cole = Colegio.objects.create(nombre='Cole P')
         self.conductor = Conductor.objects.create(rut='930', nombre='CondP', user=self.cond_user)
-        self.furgon = Furgon.objects.create(patente='P-1', conductor=self.conductor, colegio=self.cole)
-        self.student = Estudiante.objects.create(rut='700', nombre='Est P', apoderado_user=self.apod_user, furgon=self.furgon)
+        self.furgon = Furgon.objects.create(
+            patente='P-1',
+            conductor=self.conductor,
+            colegio=self.cole,
+        )
+        self.student = Estudiante.objects.create(
+            rut='700',
+            nombre='Est P',
+            apoderado_user=self.apod_user,
+            furgon=self.furgon,
+        )
 
         self.factory = APIRequestFactory()
 
@@ -58,14 +67,20 @@ class PermissionsMoreTests(TestCase):
         req = self.factory.post('/x')
         req.user = self.cond_user
         # view without action attribute should deny write
-        class V: pass
+
+        class V:
+            pass
+
         self.assertFalse(perm.has_permission(req, V()))
 
     def test_is_admin_or_conductor_object_permission_no_profile(self):
         perm = IsAdminOrConductorOrReadOnly()
         req = self.factory.post('/x/update_location/')
         req.user = self.cond_user_no_profile
-        class V: action = 'update_location'
+
+        class V:
+            action = 'update_location'
+
         # user has no conductor_profile, should return False without exception
         self.assertFalse(perm.has_object_permission(req, V(), self.furgon))
 

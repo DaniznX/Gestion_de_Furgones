@@ -1,5 +1,4 @@
 from pathlib import Path
-import os
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -19,6 +18,7 @@ INSTALLED_APPS = [
 
     'rest_framework',
     'core',
+    'frontend',
 ]
 
 MIDDLEWARE = [
@@ -78,5 +78,8 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
+
+LOGIN_URL = '/login/'
+LOGIN_REDIRECT_URL = '/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

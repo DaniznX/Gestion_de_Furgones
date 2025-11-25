@@ -1,5 +1,4 @@
 from rest_framework.permissions import BasePermission, SAFE_METHODS
-from django.contrib.auth.models import Group
 
 
 def in_group(user, group_name):
@@ -9,10 +8,19 @@ def in_group(user, group_name):
 
 
 def _conductor_owns_furgon(user, obj):
-    """Return True if the given user has a conductor_profile that matches obj.conductor."""
+    """Return True if the given user has a conductor_profile that matches obj.conductor.
+
+    This function carefully avoids raising when object attributes are missing and
+    returns False in case of any failure during the check.
+    """
     try:
         conductor_profile = getattr(user, 'conductor_profile', None)
-        if conductor_profile and hasattr(obj, 'conductor') and obj.conductor and getattr(obj.conductor, 'pk', None) == getattr(conductor_profile, 'pk', None):
+        if (
+            conductor_profile
+            and hasattr(obj, 'conductor')
+            and obj.conductor
+            and getattr(obj.conductor, 'pk', None) == getattr(conductor_profile, 'pk', None)
+        ):
             return True
     except Exception:
         return False
@@ -20,9 +28,15 @@ def _conductor_owns_furgon(user, obj):
 
 
 def _apoderado_owns_student(user, obj):
-    """Return True if the given user is the apoderado_user of the student object."""
+    """Return True if the given user is the apoderado_user of the student.
+
+    This handles missing attributes and returns False on exceptions.
+    """
     try:
-        if getattr(obj, 'apoderado_user', None) and getattr(obj.apoderado_user, 'pk', None) == getattr(user, 'pk', None):
+        if (
+            getattr(obj, 'apoderado_user', None)
+            and getattr(obj.apoderado_user, 'pk', None) == getattr(user, 'pk', None)
+        ):
             return True
     except Exception:
         return False
@@ -45,7 +59,11 @@ class IsAdminOrReadOnly(BasePermission):
 
 
 class IsAdminOrConductorOrReadOnly(BasePermission):
-    """Permite escritura a Admin; lectura a todos; acciones específicas permitidas a Conductores sobre sus recursos."""
+    """Permission: admin full, read to everyone.
+
+    Conductors are allowed to call specific actions (for example
+    update_location) on their own resources.
+    """
 
     def has_permission(self, request, view):
         if request.method in SAFE_METHODS:
@@ -76,7 +94,12 @@ class IsAdminOrConductorOrReadOnly(BasePermission):
 
 
 class IsAdminOrApoderadoOrConductorOrReadOnly(BasePermission):
-    """For student resources: Admin full; Apoderado can read/write own student's records; Conductor can read students assigned to his furgon."""
+    """Permissions for student resources.
+
+    - Admins have full access.
+    - Apoderados can read/write their own students.
+    - Conductors can read students assigned to their furgon(s).
+    """
 
     def has_permission(self, request, view):
         if request.method in SAFE_METHODS:

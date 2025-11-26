@@ -86,6 +86,23 @@ class ColegioCreate(LoginRequiredMixin, AdminRequiredMixin, CreateView):
     template_name = 'frontend/form.html'
     success_url = reverse_lazy('frontend:colegio_list')
 
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        messages.success(self.request, 'Colegio creado correctamente.')
+        return response
+
+
+class ColegioUpdate(LoginRequiredMixin, AdminRequiredMixin, UpdateView):
+    model = Colegio
+    form_class = ColegioForm
+    template_name = 'frontend/form.html'
+    success_url = reverse_lazy('frontend:colegio_list')
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        messages.success(self.request, 'Colegio actualizado correctamente.')
+        return response
+
 
 class ConductorList(LoginRequiredMixin, ListView):
     model = Conductor
@@ -106,6 +123,32 @@ class ConductorCreate(LoginRequiredMixin, AdminRequiredMixin, CreateView):
     form_class = ConductorForm
     template_name = 'frontend/form.html'
     success_url = reverse_lazy('frontend:conductor_list')
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        messages.success(self.request, 'Conductor creado correctamente.')
+        return response
+
+
+class ConductorUpdate(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+    model = Conductor
+    form_class = ConductorForm
+    template_name = 'frontend/form.html'
+    success_url = reverse_lazy('frontend:conductor_list')
+
+    def test_func(self):
+        user = self.request.user
+        # admins allowed
+        if user and (user.is_staff or in_group(user, 'Administrador')):
+            return True
+        # conductor can edit their own profile
+        obj = self.get_object()
+        return getattr(obj, 'user', None) == user
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        messages.success(self.request, 'Conductor actualizado correctamente.')
+        return response
 
 
 class FurgonList(LoginRequiredMixin, ListView):
@@ -201,6 +244,11 @@ class FurgonUpdate(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
             and getattr(obj.conductor, 'user', None) == user
         )
 
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        messages.success(self.request, 'Furgón actualizado correctamente.')
+        return response
+
 
 @login_required
 def furgon_update_location(request, pk):
@@ -253,6 +301,11 @@ class EstudianteCreate(LoginRequiredMixin, AdminRequiredMixin, CreateView):
     template_name = 'frontend/form.html'
     success_url = reverse_lazy('frontend:estudiante_list')
 
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        messages.success(self.request, 'Estudiante creado correctamente.')
+        return response
+
 
 class EstudianteDetail(LoginRequiredMixin, DetailView):
     model = Estudiante
@@ -282,6 +335,11 @@ class EstudianteUpdate(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
                 return True
         return False
 
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        messages.success(self.request, 'Estudiante actualizado correctamente.')
+        return response
+
 
 class RutaList(LoginRequiredMixin, ListView):
     model = Ruta
@@ -302,6 +360,34 @@ class RutaCreate(LoginRequiredMixin, AdminRequiredMixin, CreateView):
     form_class = RutaForm
     template_name = 'frontend/form.html'
     success_url = reverse_lazy('frontend:ruta_list')
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        messages.success(self.request, 'Ruta creada correctamente.')
+        return response
+
+
+class RutaUpdate(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+    model = Ruta
+    form_class = RutaForm
+    template_name = 'frontend/form.html'
+    success_url = reverse_lazy('frontend:ruta_list')
+
+    def test_func(self):
+        user = self.request.user
+        # Admins allowed
+        if user and (user.is_staff or in_group(user, 'Administrador')):
+            return True
+        # allow a conductor to edit routes that are assigned to their furgon
+        obj = self.get_object()
+        if getattr(obj, 'furgon', None) and getattr(obj.furgon, 'conductor', None):
+            return getattr(obj.furgon.conductor, 'user', None) == user
+        return False
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        messages.success(self.request, 'Ruta actualizada correctamente.')
+        return response
 
 
 class RutaDetail(LoginRequiredMixin, DetailView):

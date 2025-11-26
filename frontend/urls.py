@@ -12,10 +12,12 @@ urlpatterns = [
     path('colegios/', views.ColegioList.as_view(), name='colegio_list'),
     path('colegios/new/', views.ColegioCreate.as_view(), name='colegio_create'),
     path('colegios/<int:pk>/', views.ColegioDetail.as_view(), name='colegio_detail'),
+    path('colegios/<int:pk>/edit/', views.ColegioUpdate.as_view(), name='colegio_edit'),
 
     path('conductores/', views.ConductorList.as_view(), name='conductor_list'),
     path('conductores/new/', views.ConductorCreate.as_view(), name='conductor_create'),
     path('conductores/<int:pk>/', views.ConductorDetail.as_view(), name='conductor_detail'),
+    path('conductores/<int:pk>/edit/', views.ConductorUpdate.as_view(), name='conductor_edit'),
 
     path('furgones/', views.FurgonList.as_view(), name='furgon_list'),
     path('furgones/new/', views.FurgonCreate.as_view(), name='furgon_create'),
@@ -32,6 +34,7 @@ urlpatterns = [
     path('rutas/', views.RutaList.as_view(), name='ruta_list'),
     path('rutas/new/', views.RutaCreate.as_view(), name='ruta_create'),
     path('rutas/<int:pk>/', views.RutaDetail.as_view(), name='ruta_detail'),
+    path('rutas/<int:pk>/edit/', views.RutaUpdate.as_view(), name='ruta_edit'),
 
     path('notificaciones/', views.NotificacionList.as_view(), name='notificacion_list'),
     path('notificaciones/new/', views.NotificacionCreate.as_view(), name='notificacion_create'),

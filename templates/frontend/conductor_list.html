@@ -13,10 +13,19 @@
     <div class="card-body p-0">
       <div class="table-responsive">
         <table class="table mb-0">
-    <thead><tr><th>Nombre</th><th>RUT</th><th>Teléfono</th></tr></thead>
+    <thead><tr><th>Nombre</th><th>RUT</th><th>Teléfono</th><th>Acciones</th></tr></thead>
     <tbody>
       {% for c in object_list %}
-        <tr><td>{{ c.nombre }}</td><td>{{ c.rut }}</td><td>{{ c.telefono }}</td></tr>
+        <tr>
+          <td>{{ c.nombre }}</td>
+          <td>{{ c.rut }}</td>
+          <td>{{ c.telefono }}</td>
+          <td>
+            {% if user.is_staff or user|has_group:'Administrador' %}
+              <a class="btn btn-sm btn-outline-custom" href="{% url 'frontend:conductor_edit' c.pk %}">Editar</a>
+            {% endif %}
+          </td>
+        </tr>
       {% empty %}
         <tr><td colspan="3">Sin conductores</td></tr>
       {% endfor %}

@@ -1,0 +1,151 @@
+/* Theme: Modern high-contrast, friendly UI for Gestión de Furgones */
+:root{
+  /* School-bus palette */
+  --bus-yellow: #FFD400; /* primary yellow */
+  --bus-yellow-700: #FFB200;
+  --bus-black: #0b0b0b; /* deep near-black */
+  --accent-1: #ffffff; /* changed blue accent to WHITE per request */
+  --muted: #1f2937; /* dark muted text */
+  --card-bg: rgba(255,255,255,0.03);
+  --glass: rgba(255,255,255,0.02);
+  --radius: 12px;
+}
+
+/* Page background & base */
+html,body{height:100%;}
+.theme-body{
+  /* Light page background — white canvas keeping a small yellow accent */
+  background-color: #ffffff; /* white background requested */
+  color: #0b0b0b; /* default page text - dark for readability */
+  background-image: none;
+  font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+  -webkit-font-smoothing:antialiased;
+}
+
+/* strong yellow header stripe to reference school-bus colors */
+.theme-body::before{
+  /* Thin yellow accent stripe below navbar (subtle) */
+  content: '';
+  position: fixed; left: 0; right: 0; top: 56px; height: 10px;
+  background: linear-gradient(90deg, rgba(255,212,0,0.95), rgba(255,176,32,0.90));
+  opacity: 0.98; z-index: 0; pointer-events:none;
+}
+
+.main-wrapper{
+  background: #ffffff; /* content area stays white */
+  padding: 2rem;
+  border-radius: 14px;
+  box-shadow: 0 8px 30px rgba(15,23,42,0.06);
+}
+
+/* Alerts */
+.alert{
+  background: linear-gradient(90deg, rgba(255,255,255,0.98), rgba(251,251,251,0.98));
+  color: #0b0b0b;
+  border: 1px solid rgba(11,11,11,0.06);
+  box-shadow: 0 8px 26px rgba(15,23,42,0.04);
+  border-radius: 10px;
+}
+.alert-success{ background: linear-gradient(90deg, rgba(45,212,191,0.06), rgba(255,255,255,0.02)); color: #e6fff6; }
+.alert-danger{ background: linear-gradient(90deg, rgba(255,50,50,0.06), rgba(255,255,255,0.02)); color: #ffecec; }
+.alert-info{ background: linear-gradient(90deg, rgba(14,165,164,0.06), rgba(255,255,255,0.02)); }
+
+/* small helpers for actions inside cards */
+.card .kpi-badge{ font-size: 0.82rem; padding: 5px 10px; }
+
+
+/* Navbar */
+.theme-navbar{
+  background: #ffffff; /* navbar on white */
+  border-bottom: 6px solid var(--bus-yellow);
+  border-bottom: 1px solid rgba(11,11,11,0.06);
+}
+.navbar-brand{ font-weight:800; color: var(--bus-black) !important; letter-spacing:0.4px; }
+.nav-link{ color: rgba(11,11,11,0.85) !important; }
+.nav-link:hover{ color: rgba(11,11,11,0.95) !important; }
+
+/* Hero (replacement for jumbotron) */
+/* Hero gets a warm yellow left panel and dark right side, with a subtle school-bus pattern */
+.hero{
+  /* Hero with left yellow accent and white canvas */
+  background: linear-gradient(90deg, rgba(255,212,0,0.98) 24%, rgba(255,255,255,0.98) 24%);
+  padding: 2rem 1.25rem;
+  border-radius: 14px;
+  margin-bottom: 1.25rem;
+  border: 1px solid rgba(11,11,11,0.06);
+}
+.hero h1{ color: var(--bus-black); font-weight:800; text-shadow: none; }
+.hero p{ color: rgba(11,11,11,0.65); }
+
+/* Cards on index */
+.card{
+  background: linear-gradient(180deg,#ffffff,#fbfbfb);
+  border-radius: var(--radius);
+  overflow: hidden;
+  transition: transform 180ms ease, box-shadow 180ms ease, background-color 180ms ease;
+  border: 1px solid rgba(11,11,11,0.06);
+}
+.card:hover{
+  transform: translateY(-6px);
+  box-shadow: 0 16px 40px rgba(15,23,42,0.06);
+  background: linear-gradient(180deg,#ffffff,#f8f8fb);
+}
+.card .card-body{ min-height: 95px; }
+.card-title{ font-weight:700; color: #0b0b0b; }
+.card-text{ color: rgba(11,11,11,0.72); }
+
+.text-muted{ color: rgba(11,11,11,0.55) !important; }
+
+/* Buttons */
+.btn-custom{
+  background: linear-gradient(90deg, var(--bus-yellow), var(--bus-yellow-700));
+  color: var(--bus-black); border: none; font-weight:800;
+  border-radius: 10px; padding: .45rem .9rem; letter-spacing:0.3px;
+  box-shadow: 0 6px 18px rgba(13,30,33,0.35), inset 0 -2px 6px rgba(255,255,255,0.06);
+  transition: transform .12s ease, box-shadow .12s ease, opacity .12s ease;
+}
+.btn-custom:hover{ transform: translateY(-2px); opacity:0.98; box-shadow: 0 12px 30px rgba(0,0,0,0.35); }
+.btn-outline-custom{ color: var(--bus-black); border: 1px solid rgba(11,11,11,0.06); background: transparent; border-radius:10px; }
+.btn-outline-custom:hover{ background: rgba(11,11,11,0.03); color: #000; }
+
+/* Forms and boxes */
+/* form fields: darker background but keep label/text readable */
+.form-control{
+  background: #ffffff; border: 1px solid rgba(11,11,11,0.06); color: #0b0b0b;
+  border-radius: 8px; padding: .55rem .7rem;
+}
+
+/* Badges and extras */
+.kpi-badge{ display:inline-block; background: linear-gradient(90deg,var(--bus-yellow),var(--bus-yellow-700)); color:var(--bus-black); padding:6px 10px; border-radius:999px; font-weight:800; box-shadow: 0 6px 14px rgba(15,23,42,0.06); }
+
+/* Small responsive tweak for the index card titles */
+@media (max-width:575px){
+  .card .card-body{ min-height:80px; }
+  .hero{padding:1rem}
+}
+
+/* Utility to make link cards not blue-link */
+.card.text-decoration-none.text-dark{ color: inherit !important; }
+
+/* subtle focus states for accessibility */
+a:focus, button:focus, .form-control:focus{ outline:2px solid rgba(255,212,0,0.18); outline-offset:2px; box-shadow: 0 0 0 3px rgba(255,212,0,0.06); }
+
+/* Footer / helper */
+.avatar-small{ width:34px; height:34px; border-radius:50%; border:1px solid rgba(11,11,11,0.06); }
+
+/* Light table style for admin-like views */
+/* Tables: dark background + white text so everything is readable */
+/* Tables: white background + dark text for readability */
+table.table thead th{ background: rgba(11,11,11,0.04); color: #0b0b0b; border-bottom: 1px solid rgba(11,11,11,0.06); }
+table.table tbody tr{ background: transparent; color: #0b0b0b; }
+table.table tbody td{ color: #0b0b0b; }
+table.table.table-striped tbody tr:nth-of-type(odd){ background: rgba(11,11,11,0.02); }
+table.table.table-striped tbody tr:nth-of-type(even){ background: rgba(255,255,255,0.00); }
+
+/* small decorative shapes (optional) */
+.accent-line{ height:6px; width:84px; border-radius:8px; background: linear-gradient(90deg,var(--bus-yellow),var(--bus-yellow-700)); margin-bottom:12px; }
+
+/* Fallback for older browsers */
+@supports (not (background:linear-gradient(90deg,#000,#000))){
+  .theme-body{ background:#ffffff; }
+}

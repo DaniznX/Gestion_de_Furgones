@@ -97,6 +97,8 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
+# Include project-level `static/` folder so our custom CSS is found in dev mode
+STATICFILES_DIRS = [ BASE_DIR / 'static' ]
 
 LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = '/'

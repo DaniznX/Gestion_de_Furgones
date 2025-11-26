@@ -1,22 +1,42 @@
 {% extends 'frontend/base.html' %}
 
 {% block content %}
-  <div class="jumbotron mb-4">
-    <h1 class="display-5">Sistema Gestión de Furgones</h1>
-    <p class="lead">Bienvenido al panel de administración simple (frontend). Usa las secciones del menú o los accesos rápidos abajo para manejar recursos.</p>
-    <hr class="my-4">
-    <p>Este frontend cubre CRUD para colegios, conductores, furgones, estudiantes, rutas, notificaciones, pagos y asistencias.</p>
+  <div class="hero mb-4">
+    <div class="d-flex justify-content-between align-items-start flex-wrap">
+      <div>
+        <div class="accent-line"></div>
+        <h1 class="display-5">Sistema Gestión de Furgones</h1>
+        <p class="lead">Bienvenido al panel de administración — controla furgones, rutas, notificaciones y más desde aquí.</p>
+      </div>
+      <div class="d-flex gap-2 align-items-center mt-3">
+        {% if user.is_authenticated %}
+          <a class="btn btn-custom" href="{% url 'frontend:furgon_list' %}">
+            <i class="bi bi-truck me-2"></i> Ver Furgones
+          </a>
+        {% else %}
+          <a class="btn btn-custom" href="{% url 'frontend:login' %}">
+            <i class="bi bi-box-arrow-in-right me-2"></i> Entrar
+          </a>
+          <a class="btn btn-outline-custom" href="{% url 'frontend:colegio_list' %}">Explorar colegios</a>
+        {% endif %}
+      </div>
+    </div>
   </div>
 
   <div class="row g-3">
     {% load role_tags %}
     {% if user.is_authenticated %}
       <div class="col-6 col-md-4 col-lg-3">
-        <a class="card text-decoration-none text-dark" href="{% url 'frontend:furgon_list' %}">
-          <div class="card-body">
-            <h5 class="card-title"><i class="bi bi-truck me-2"></i>Furgones</h5>
-            <p class="card-text">Ver y administrar furgones</p>
-            <small class="text-muted">Total: {{ count_furgones }}{% if count_my_furgones %} • Míos: {{ count_my_furgones }}{% endif %}</small>
+        <a class="card text-decoration-none text-dark h-100" href="{% url 'frontend:furgon_list' %}">
+          <div class="card-body d-flex flex-column justify-content-between">
+            <div>
+              <h5 class="card-title"><i class="bi bi-truck me-2"></i>Furgones</h5>
+              <p class="card-text">Ver y administrar furgones</p>
+            </div>
+            <div class="d-flex justify-content-between align-items-center mt-3">
+              <small class="text-muted">Total: {{ count_furgones }}{% if count_my_furgones %} • Míos: {{ count_my_furgones }}{% endif %}</small>
+              <span class="kpi-badge">Ver</span>
+            </div>
           </div>
         </a>
       </div>
@@ -24,20 +44,30 @@
 
     {% if user.is_staff or user|has_group:'Administrador' %}
       <div class="col-6 col-md-4 col-lg-3">
-        <a class="card text-decoration-none text-dark" href="{% url 'frontend:colegio_list' %}">
-          <div class="card-body">
-            <h5 class="card-title"><i class="bi bi-building me-2"></i>Colegios</h5>
-            <p class="card-text">Gestión de colegios</p>
-            <small class="text-muted">Total: {{ count_colegios }}</small>
+        <a class="card text-decoration-none text-dark h-100" href="{% url 'frontend:colegio_list' %}">
+          <div class="card-body d-flex flex-column justify-content-between">
+            <div>
+              <h5 class="card-title"><i class="bi bi-building me-2"></i>Colegios</h5>
+              <p class="card-text">Gestión de colegios</p>
+            </div>
+            <div class="d-flex justify-content-between align-items-center mt-3">
+              <small class="text-muted">Total: {{ count_colegios }}</small>
+              <span class="kpi-badge">Administrar</span>
+            </div>
           </div>
         </a>
       </div>
       <div class="col-6 col-md-4 col-lg-3">
-        <a class="card text-decoration-none text-dark" href="{% url 'frontend:conductor_list' %}">
-          <div class="card-body">
-            <h5 class="card-title"><i class="bi bi-person-badge me-2"></i>Conductores</h5>
-            <p class="card-text">Gestión de conductores</p>
-            <small class="text-muted">Total: {{ count_conductores }}</small>
+        <a class="card text-decoration-none text-dark h-100" href="{% url 'frontend:conductor_list' %}">
+          <div class="card-body d-flex flex-column justify-content-between">
+            <div>
+              <h5 class="card-title"><i class="bi bi-person-badge me-2"></i>Conductores</h5>
+              <p class="card-text">Gestión de conductores</p>
+            </div>
+            <div class="d-flex justify-content-between align-items-center mt-3">
+              <small class="text-muted">Total: {{ count_conductores }}</small>
+              <span class="kpi-badge">Equipo</span>
+            </div>
           </div>
         </a>
       </div>
@@ -45,29 +75,44 @@
 
     {% if user.is_staff or user|has_group:'Administrador' or user|has_group:'Conductor' or user|has_group:'Apoderado' %}
       <div class="col-6 col-md-4 col-lg-3">
-        <a class="card text-decoration-none text-dark" href="{% url 'frontend:estudiante_list' %}">
-          <div class="card-body">
-            <h5 class="card-title"><i class="bi bi-people me-2"></i>Estudiantes</h5>
-            <p class="card-text">Ver estudiantes y apoderados</p>
-            <small class="text-muted">Total: {{ count_estudiantes }}</small>
+        <a class="card text-decoration-none text-dark h-100" href="{% url 'frontend:estudiante_list' %}">
+          <div class="card-body d-flex flex-column justify-content-between">
+            <div>
+              <h5 class="card-title"><i class="bi bi-people me-2"></i>Estudiantes</h5>
+              <p class="card-text">Ver estudiantes y apoderados</p>
+            </div>
+            <div class="d-flex justify-content-between align-items-center mt-3">
+              <small class="text-muted">Total: {{ count_estudiantes }}</small>
+              <span class="kpi-badge">Alumnos</span>
+            </div>
           </div>
         </a>
       </div>
       <div class="col-6 col-md-4 col-lg-3">
-        <a class="card text-decoration-none text-dark" href="{% url 'frontend:ruta_list' %}">
-          <div class="card-body">
-            <h5 class="card-title"><i class="bi bi-geo-alt me-2"></i>Rutas</h5>
-            <p class="card-text">Ver y editar rutas</p>
-            <small class="text-muted">Total: {{ count_rutas }}</small>
+        <a class="card text-decoration-none text-dark h-100" href="{% url 'frontend:ruta_list' %}">
+          <div class="card-body d-flex flex-column justify-content-between">
+            <div>
+              <h5 class="card-title"><i class="bi bi-geo-alt me-2"></i>Rutas</h5>
+              <p class="card-text">Ver y editar rutas</p>
+            </div>
+            <div class="d-flex justify-content-between align-items-center mt-3">
+              <small class="text-muted">Total: {{ count_rutas }}</small>
+              <span class="kpi-badge">Mapas</span>
+            </div>
           </div>
         </a>
       </div>
       <div class="col-6 col-md-4 col-lg-3">
-        <a class="card text-decoration-none text-dark" href="{% url 'frontend:notificacion_list' %}">
-          <div class="card-body">
-            <h5 class="card-title"><i class="bi bi-bell me-2"></i>Notificaciones</h5>
-            <p class="card-text">Mensajes y alertas</p>
-            <small class="text-muted">No leídas: {{ count_unread_notifications }}</small>
+        <a class="card text-decoration-none text-dark h-100" href="{% url 'frontend:notificacion_list' %}">
+          <div class="card-body d-flex flex-column justify-content-between">
+            <div>
+              <h5 class="card-title"><i class="bi bi-bell me-2"></i>Notificaciones</h5>
+              <p class="card-text">Mensajes y alertas</p>
+            </div>
+            <div class="d-flex justify-content-between align-items-center mt-3">
+              <small class="text-muted">No leídas: {{ count_unread_notifications }}</small>
+              <span class="kpi-badge">Alertas</span>
+            </div>
           </div>
         </a>
       </div>
@@ -75,20 +120,30 @@
 
     {% if user.is_staff or user|has_group:'Administrador' %}
       <div class="col-6 col-md-4 col-lg-3">
-        <a class="card text-decoration-none text-dark" href="{% url 'frontend:pago_list' %}">
-          <div class="card-body">
-            <h5 class="card-title"><i class="bi bi-currency-dollar me-2"></i>Pagos</h5>
-            <p class="card-text">Control de pagos</p>
-            <small class="text-muted">Total: {{ count_pagos }}</small>
+        <a class="card text-decoration-none text-dark h-100" href="{% url 'frontend:pago_list' %}">
+          <div class="card-body d-flex flex-column justify-content-between">
+            <div>
+              <h5 class="card-title"><i class="bi bi-currency-dollar me-2"></i>Pagos</h5>
+              <p class="card-text">Control de pagos</p>
+            </div>
+            <div class="d-flex justify-content-between align-items-center mt-3">
+              <small class="text-muted">Total: {{ count_pagos }}</small>
+              <span class="kpi-badge">Cobros</span>
+            </div>
           </div>
         </a>
       </div>
       <div class="col-6 col-md-4 col-lg-3">
-        <a class="card text-decoration-none text-dark" href="{% url 'frontend:asistencia_list' %}">
-          <div class="card-body">
-            <h5 class="card-title"><i class="bi bi-journal-check me-2"></i>Asistencias</h5>
-            <p class="card-text">Registro de asistencias</p>
-            <small class="text-muted">Total: {{ count_asistencias }}</small>
+        <a class="card text-decoration-none text-dark h-100" href="{% url 'frontend:asistencia_list' %}">
+          <div class="card-body d-flex flex-column justify-content-between">
+            <div>
+              <h5 class="card-title"><i class="bi bi-journal-check me-2"></i>Asistencias</h5>
+              <p class="card-text">Registro de asistencias</p>
+            </div>
+            <div class="d-flex justify-content-between align-items-center mt-3">
+              <small class="text-muted">Total: {{ count_asistencias }}</small>
+              <span class="kpi-badge">Registro</span>
+            </div>
           </div>
         </a>
       </div>
@@ -96,10 +151,16 @@
 
     {% if user.is_authenticated and user|has_group:'Conductor' %}
       <div class="col-6 col-md-4 col-lg-3">
-        <a class="card text-decoration-none text-dark" href="{% url 'frontend:mi_furgon' %}">
-          <div class="card-body">
-            <h5 class="card-title">Mi Furgón</h5>
-            <p class="card-text">Acceso rápido a tu furgón y rutas</p>
+        <a class="card text-decoration-none text-dark h-100" href="{% url 'frontend:mi_furgon' %}">
+          <div class="card-body d-flex flex-column justify-content-between">
+            <div>
+              <h5 class="card-title">Mi Furgón</h5>
+              <p class="card-text">Acceso rápido a tu furgón y rutas</p>
+            </div>
+            <div class="d-flex justify-content-between align-items-center mt-3">
+              <small class="text-muted">Acceso</small>
+              <span class="kpi-badge">Ir</span>
+            </div>
           </div>
         </a>
       </div>
@@ -107,10 +168,16 @@
 
     {% if not user.is_authenticated %}
       <div class="col-6 col-md-4 col-lg-3">
-        <a class="card text-decoration-none text-dark" href="{% url 'frontend:login' %}">
-          <div class="card-body">
-            <h5 class="card-title">Entrar</h5>
-            <p class="card-text">Accede para ver y administrar recursos</p>
+        <a class="card text-decoration-none text-dark h-100" href="{% url 'frontend:login' %}">
+          <div class="card-body d-flex flex-column justify-content-between">
+            <div>
+              <h5 class="card-title">Entrar</h5>
+              <p class="card-text">Accede para ver y administrar recursos</p>
+            </div>
+            <div class="d-flex justify-content-between align-items-center mt-3">
+              <small class="text-muted">Usuario</small>
+              <span class="kpi-badge">Login</span>
+            </div>
           </div>
         </a>
       </div>

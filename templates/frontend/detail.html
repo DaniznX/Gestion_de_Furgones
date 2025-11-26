@@ -1,7 +1,16 @@
 {% extends 'frontend/base.html' %}
 
 {% block content %}
-  <h3>Detalle</h3>
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <div>
+      <h3 class="mb-0">Detalle</h3>
+      <small class="text-muted">{{ object }}</small>
+    </div>
+    <div class="d-flex gap-2">
+      <a class="btn btn-outline-custom" href="{{ object.get_edit_url }}">Editar</a>
+      <a class="btn btn-link" href="{{ request.META.HTTP_REFERER|default:request.path }}">Volver</a>
+    </div>
+  </div>
   <div class="card">
     <div class="card-body">
       <table class="table">
@@ -14,7 +23,6 @@
           {% endfor %}
         </tbody>
       </table>
-      <a class="btn btn-secondary" href="{{ object.get_edit_url }}">Editar</a>
       {% comment %} Related objects preview {# safe, uses known relations #} {% endcomment %}
       <hr>
       <h5>Relaciones</h5>
@@ -71,7 +79,7 @@
           {% endfor %}
         </ul>
       {% endif %}
-      <a class="btn btn-link" href="{{ request.META.HTTP_REFERER|default:request.path }}">Volver</a>
+      
     </div>
   </div>
 {% endblock %}

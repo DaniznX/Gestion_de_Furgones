@@ -1,7 +1,10 @@
 {% extends 'frontend/base.html' %}
 
 {% block content %}
-  <h3>Mi(s) Furgón(es)</h3>
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h3 class="mb-0">Mi(s) Furgón(es)</h3>
+    <small class="text-muted">Acceso rápido a tu vehículo</small>
+  </div>
   {% if furgones %}
     {% for f in furgones %}
       <div class="card mb-3">
@@ -29,7 +32,7 @@
             {% csrf_token %}
             <input name="latitude" placeholder="lat" class="form-control" />
             <input name="longitude" placeholder="lon" class="form-control" />
-            <button class="btn btn-primary">Actualizar Ubicación</button>
+            <button class="btn btn-custom">Actualizar Ubicación</button>
           </form>
         </div>
       </div>

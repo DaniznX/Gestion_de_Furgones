@@ -1,12 +1,18 @@
 {% extends 'frontend/base.html' %}
 
 {% block content %}
-  <h3>Pagos</h3>
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h3 class="mb-0">Pagos</h3>
+    <small class="text-muted">Historial de cobros</small>
+  </div>
   {% load role_tags %}
   {% if user.is_staff or user|has_group:'Administrador' %}
-    <p><a href="/pagos/new/" class="btn btn-success">Nuevo Pago</a></p>
+    <p class="mb-3 text-end"><a href="/pagos/new/" class="btn btn-custom">Nuevo Pago</a></p>
   {% endif %}
-  <table class="table">
+  <div class="card">
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table mb-0">
     <thead><tr><th>ID</th><th>Estudiante</th><th>Monto</th><th>Estado</th></tr></thead>
     <tbody>
       {% for p in object_list %}
@@ -15,5 +21,8 @@
         <tr><td colspan="4">Sin pagos</td></tr>
       {% endfor %}
     </tbody>
-  </table>
+        </table>
+      </div>
+    </div>
+  </div>
 {% endblock %}

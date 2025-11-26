@@ -1,12 +1,18 @@
 {% extends 'frontend/base.html' %}
 
 {% block content %}
-  <h3>Notificaciones</h3>
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h3 class="mb-0">Notificaciones</h3>
+    <small class="text-muted">Mensajes y alertas del sistema</small>
+  </div>
   {% load role_tags %}
   {% if user.is_staff or user|has_group:'Administrador' %}
-    <p><a href="/notificaciones/new/" class="btn btn-success">Nueva Notificación</a></p>
+    <p class="mb-3 text-end"><a href="/notificaciones/new/" class="btn btn-custom">Nueva Notificación</a></p>
   {% endif %}
-  <table class="table">
+  <div class="card">
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table mb-0">
     <thead><tr><th>Tipo</th><th>Mensaje</th><th>Estudiante</th><th>Furgón</th><th>Creado</th><th>Leído</th><th>Acciones</th></tr></thead>
     <tbody>
       {% for n in object_list %}
@@ -20,13 +26,13 @@
           <td>
             {% if not n.leido %}
               {% if user.is_staff or user|has_group:'Administrador' %}
-                <a class="btn btn-sm btn-primary" href="/notificaciones/{{ n.pk }}/marcar_leida/">Marcar como leída</a>
+                <a class="btn btn-sm btn-custom" href="/notificaciones/{{ n.pk }}/marcar_leida/">Marcar como leída</a>
               {% else %}
                 {% with is_apod=user|has_group:'Apoderado' is_cond=user|has_group:'Conductor' %}
                   {% if is_apod and n.estudiante and n.estudiante.apoderado_user == user %}
-                    <a class="btn btn-sm btn-primary" href="/notificaciones/{{ n.pk }}/marcar_leida/">Marcar como leída</a>
+                    <a class="btn btn-sm btn-custom" href="/notificaciones/{{ n.pk }}/marcar_leida/">Marcar como leída</a>
                   {% elif is_cond and n.furgon and n.furgon.conductor and n.furgon.conductor.user == user %}
-                    <a class="btn btn-sm btn-primary" href="/notificaciones/{{ n.pk }}/marcar_leida/">Marcar como leída</a>
+                    <a class="btn btn-sm btn-custom" href="/notificaciones/{{ n.pk }}/marcar_leida/">Marcar como leída</a>
                   {% endif %}
                 {% endwith %}
               {% endif %}
@@ -37,5 +43,8 @@
         <tr><td colspan="7">No hay notificaciones.</td></tr>
       {% endfor %}
     </tbody>
-  </table>
+        </table>
+      </div>
+    </div>
+  </div>
 {% endblock %}

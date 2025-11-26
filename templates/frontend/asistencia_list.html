@@ -1,12 +1,18 @@
 {% extends 'frontend/base.html' %}
 
 {% block content %}
-  <h3>Asistencias</h3>
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h3 class="mb-0">Asistencias</h3>
+    <small class="text-muted">Registro de entradas y salidas</small>
+  </div>
   {% load role_tags %}
   {% if user.is_staff or user|has_group:'Administrador' %}
-    <p><a href="/asistencias/new/" class="btn btn-success">Nueva Asistencia</a></p>
+    <p class="mb-3 text-end"><a href="/asistencias/new/" class="btn btn-custom">Nueva Asistencia</a></p>
   {% endif %}
-  <table class="table">
+  <div class="card">
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table mb-0">
     <thead><tr><th>Estudiante</th><th>Fecha</th><th>Estado</th><th>Furgón</th></tr></thead>
     <tbody>
       {% for a in object_list %}
@@ -20,5 +26,8 @@
         <tr><td colspan="4">Sin registros</td></tr>
       {% endfor %}
     </tbody>
-  </table>
+        </table>
+      </div>
+    </div>
+  </div>
 {% endblock %}

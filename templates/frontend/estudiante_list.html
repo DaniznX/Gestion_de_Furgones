@@ -1,12 +1,18 @@
 {% extends 'frontend/base.html' %}
 
 {% block content %}
-  <h3>Estudiantes</h3>
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h3 class="mb-0">Estudiantes</h3>
+    <small class="text-muted">Familias y apoderados</small>
+  </div>
   {% load role_tags %}
   {% if user.is_staff or user|has_group:'Administrador' %}
-    <p><a href="/estudiantes/new/" class="btn btn-success">Nuevo Estudiante</a></p>
+      <p class="mb-3 text-end"><a href="/estudiantes/new/" class="btn btn-custom">Nuevo Estudiante</a></p>
   {% endif %}
-  <table class="table table-striped">
+    <div class="card">
+      <div class="card-body p-0">
+        <div class="table-responsive">
+          <table class="table table-striped mb-0">
     <thead><tr><th>Nombre</th><th>RUT</th><th>Furgón</th><th>Apoderado</th><th>Tel Apoderado</th><th>Acciones</th></tr></thead>
     <tbody>
       {% for s in object_list %}
@@ -17,14 +23,14 @@
           <td>{% if s.apoderado_user %}{{ s.apoderado_user.username }}{% endif %}</td>
           <td>{{ s.telefono_apoderado }}</td>
           <td>
-            {% if user.is_staff or user|has_group:'Administrador' %}
-              <a class="btn btn-sm btn-secondary" href="/estudiantes/{{ s.pk }}/edit/">Editar</a>
+                    {% if user.is_staff or user|has_group:'Administrador' %}
+                      <a class="btn btn-sm btn-outline-custom" href="/estudiantes/{{ s.pk }}/edit/">Editar</a>
             {% else %}
               {% with is_apod=user|has_group:'Apoderado' is_cond=user|has_group:'Conductor' %}
                 {% if is_apod and s.apoderado_user and s.apoderado_user == user %}
-                  <a class="btn btn-sm btn-secondary" href="/estudiantes/{{ s.pk }}/edit/">Editar</a>
+                      <a class="btn btn-sm btn-outline-custom" href="/estudiantes/{{ s.pk }}/edit/">Editar</a>
                 {% elif is_cond and s.furgon and s.furgon.conductor and s.furgon.conductor.user == user %}
-                  <a class="btn btn-sm btn-secondary" href="/estudiantes/{{ s.pk }}/edit/">Editar</a>
+                      <a class="btn btn-sm btn-outline-custom" href="/estudiantes/{{ s.pk }}/edit/">Editar</a>
                 {% endif %}
               {% endwith %}
             {% endif %}
@@ -34,5 +40,8 @@
         <tr><td colspan="6">Sin estudiantes.</td></tr>
       {% endfor %}
     </tbody>
-  </table>
+        </table>
+      </div>
+    </div>
+  </div>
 {% endblock %}
